@@ -9,41 +9,42 @@ import os
 import cv2
 import argparse
 import numpy as np
-from core.utils import image_utils, file_utils
-from core import camera_params, stereo_matcher
+from lib import utils
+from lib import camera_params, stereo_matcher
 
 
 class StereoDepth(object):
     """双目测距"""
 
-    def __init__(self, stereo_file, width=640, height=480, filter=True, use_open3d=True, use_pcl=False):
+    # def __init__(self, stereo_file, width=640, height=480, filter=True, use_open3d=False, use_pcl=False):
+    def __init__(self, stereo_file, width=640, height=480, filter=True):
         """
         :param stereo_file: 双目相机内外参数配置文件
         :param width: 相机分辨率width
         :param height:相机分辨率height
         :param filter: 是否使用WLS滤波器对视差图进行滤波
-        :param use_open3d: 是否使用open3d显示点云
-        :param use_pcl: 是否使用PCL显示点云
+        # :param use_open3d: 是否使用open3d显示点云
+        # :param use_pcl: 是否使用PCL显示点云
         """
         self.count = 0
         self.filter = filter
         self.camera_config = camera_params.get_stereo_coefficients(stereo_file)
-        self.use_pcl = use_pcl
-        self.use_open3d = use_open3d
-        # 初始化3D点云
-        if self.use_pcl:
-            # 使用open3d显示点云
-            from core.utils_pcl import pcl_tools
-            self.pcl_viewer = pcl_tools.PCLCloudViewer()
-        if self.use_open3d:
-            # 使用PCL显示点云
-            from core.utils_3d import open3d_visual
-            self.open3d_viewer = open3d_visual.Open3DVisual(camera_intrinsic=self.camera_config["K1"],
-                                                            depth_width=width,
-                                                            depth_height=height)
-            self.open3d_viewer.show_image_pcd(True)
-            self.open3d_viewer.show_origin_pcd(True)
-            self.open3d_viewer.show_image_pcd(True)
+        # self.use_pcl = use_pcl
+        # self.use_open3d = use_open3d
+        # # 初始化3D点云
+        # if self.use_pcl:
+        #     # 使用open3d显示点云
+        #     from core.utils_pcl import pcl_tools
+        #     self.pcl_viewer = pcl_tools.PCLCloudViewer()
+        # if self.use_open3d:
+        #     # 使用PCL显示点云
+        #     from core.utils_3d import open3d_visual
+        #     self.open3d_viewer = open3d_visual.Open3DVisual(camera_intrinsic=self.camera_config["K1"],
+        #                                                     depth_width=width,
+        #                                                     depth_height=height)
+        #     self.open3d_viewer.show_image_pcd(True)
+        #     self.open3d_viewer.show_origin_pcd(True)
+        #     self.open3d_viewer.show_image_pcd(True)
         assert (width, height) == self.camera_config["size"], Exception("Error:{}".format(self.camera_config["size"]))
 
     def test_pair_image_file(self, left_file, right_file):
@@ -57,28 +58,28 @@ class StereoDepth(object):
         frameL = cv2.imread(right_file)
         self.task(frameR, frameL, waitKey=0)
 
-    def capture1(self, video):
-        """
-        用于采集单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
-        :param video:int or str,视频路径或者摄像头ID
-        :param save_dir: str,保存左右图片的路径
-        """
-        cap = image_utils.get_video_capture(video)
-        width, height, numFrames, fps = image_utils.get_video_info(cap)
-        self.count = 0
-        while True:
-            success, frame = cap.read()
-            if not success:
-                print("No more frames")
-                break
-            frameL = frame[:, :int(width / 2), :]
-            frameR = frame[:, int(width / 2):, :]
-            self.count += 1
-            self.task(frameL, frameR, waitKey=5)
-            if cv2.waitKey(1) & 0xFF == ord('q'):  # Get key to stop stream. Press q for exit
-                break
-        cap.release()
-        cv2.destroyAllWindows()
+    # def capture1(self, video):
+    #     """
+    #     用于采集单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
+    #     :param video:int or str,视频路径或者摄像头ID
+    #     :param save_dir: str,保存左右图片的路径
+    #     """
+    #     cap = image_utils.get_video_capture(video)
+    #     width, height, numFrames, fps = image_utils.get_video_info(cap)
+    #     self.count = 0
+    #     while True:
+    #         success, frame = cap.read()
+    #         if not success:
+    #             print("No more frames")
+    #             break
+    #         frameL = frame[:, :int(width / 2), :]
+    #         frameR = frame[:, int(width / 2):, :]
+    #         self.count += 1
+    #         self.task(frameL, frameR, waitKey=5)
+    #         if cv2.waitKey(1) & 0xFF == ord('q'):  # Get key to stop stream. Press q for exit
+    #             break
+    #     cap.release()
+    #     cv2.destroyAllWindows()
 
     def capture2(self, left_video, right_video):
         """
@@ -87,10 +88,10 @@ class StereoDepth(object):
         :param right_video:int or str,右视频路径或者摄像头ID
         :return:
         """
-        capL = image_utils.get_video_capture(left_video)
-        capR = image_utils.get_video_capture(right_video)
-        width, height, numFrames, fps = image_utils.get_video_info(capL)
-        width, height, numFrames, fps = image_utils.get_video_info(capR)
+        capL = utils.get_video_capture(left_video)
+        capR = utils.get_video_capture(right_video)
+        width, height, numFrames, fps = utils.get_video_info(capL)
+        width, height, numFrames, fps = utils.get_video_info(capR)
         self.count = 0
         while True:
             successL, frameL = capL.read()
@@ -174,33 +175,34 @@ class StereoDepth(object):
         # Get the disparity map
         dispL = self.get_disparity(grayL, grayR, self.filter)
         points_3d = self.get_3dpoints(disparity=dispL, Q=self.camera_config["Q"])
-        self.show_3dcloud_for_open3d(frameL, frameR, points_3d)
-        self.show_3dcloud_for_pcl(frameL, frameR, points_3d)
-        self.show_2dimage(frameL, frameR, points_3d, dispL, waitKey=waitKey)
+        # self.show_3dcloud_for_open3d(frameL, frameR, points_3d)
+        # self.show_3dcloud_for_pcl(frameL, frameR, points_3d)
+        # self.show_2dimage(frameL, frameR, points_3d, dispL, waitKey=waitKey)
+        self.show_2dimage(grayL, grayR, points_3d, dispL, waitKey=waitKey)
 
-    def show_3dcloud_for_open3d(self, frameL, frameR, points_3d):
-        """
-        使用open3d显示点云
-        :param frameL:
-        :param frameR:
-        :param points_3d:
-        :return:
-        """
-        if self.use_open3d:
-            x, y, depth = cv2.split(points_3d)  # depth = points_3d[:, :, 2]
-            self.open3d_viewer.show(color_image=frameL, depth_image=depth)
+    # def show_3dcloud_for_open3d(self, frameL, frameR, points_3d):
+    #     """
+    #     使用open3d显示点云
+    #     :param frameL:
+    #     :param frameR:
+    #     :param points_3d:
+    #     :return:
+    #     """
+    #     if self.use_open3d:
+    #         x, y, depth = cv2.split(points_3d)  # depth = points_3d[:, :, 2]
+    #         self.open3d_viewer.show(color_image=frameL, depth_image=depth)
 
-    def show_3dcloud_for_pcl(self, frameL, frameR, points_3d):
-        """
-        使用PCL显示点云
-        :param frameL:
-        :param frameR:
-        :param points_3d:
-        :return:
-        """
-        if self.use_pcl:
-            self.pcl_viewer.add_3dpoints(points_3d/1000, frameL)
-            self.pcl_viewer.show()
+    # def show_3dcloud_for_pcl(self, frameL, frameR, points_3d):
+    #     """
+    #     使用PCL显示点云
+    #     :param frameL:
+    #     :param frameR:
+    #     :param points_3d:
+    #     :return:
+    #     """
+    #     if self.use_pcl:
+    #         self.pcl_viewer.add_3dpoints(points_3d/1000, frameL)
+    #         self.pcl_viewer.show()
 
     def show_2dimage(self, frameL, frameR, points_3d, dispL, waitKey=0):
         """
@@ -214,13 +216,13 @@ class StereoDepth(object):
         xyz_coord = points_3d  # depth = points_3d[:, :, 2]
         depth_colormap = stereo_matcher.get_visual_depth(depth)
         dispL_colormap = stereo_matcher.get_visual_disparity(dispL)
-        image_utils.addMouseCallback("left", xyz_coord, info="world coords=(x,y,depth)={}mm")
-        image_utils.addMouseCallback("right", xyz_coord, info="world coords=(x,y,depth)={}mm")
-        image_utils.addMouseCallback("disparity-color", xyz_coord, info="world coords=(x,y,depth)={}mm")
-        image_utils.addMouseCallback("depth-color", xyz_coord, info="world coords=(x,y,depth)={}mm")
+        # image_utils.addMouseCallback("left", xyz_coord, info="world coords=(x,y,depth)={}mm")
+        # image_utils.addMouseCallback("right", xyz_coord, info="world coords=(x,y,depth)={}mm")
+        # image_utils.addMouseCallback("disparity-color", xyz_coord, info="world coords=(x,y,depth)={}mm")
+        # image_utils.addMouseCallback("depth-color", xyz_coord, info="world coords=(x,y,depth)={}mm")
         result = {"frameL": frameL, "frameR": frameR, "disparity": dispL_colormap, "depth": depth_colormap}
-        cv2.imshow('left', frameL)
-        cv2.imshow('right', frameR)
+        # cv2.imshow('left', frameL)
+        # cv2.imshow('right', frameR)
         cv2.imshow('disparity-color', dispL_colormap)
         cv2.imshow('depth-color', depth_colormap)
         key = cv2.waitKey(waitKey)
@@ -278,15 +280,16 @@ if __name__ == '__main__':
     args = get_parser().parse_args()
     print("args={}".format(args))
     stereo = StereoDepth(args.stereo_file, filter=args.filter)
+
     if args.left_video is not None and args.right_video is not None:
         # 双USB连接线的双目摄像头
         stereo.capture2(left_video=args.left_video, right_video=args.right_video)
-    elif args.left_video is not None:
-        # 单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
-        stereo.capture1(video=args.left_video)
-    elif args.right_video is not None:
-        # 单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
-        stereo.capture1(video=args.right_video)
-    if args.left_file and args.right_file:
+    # elif args.left_video is not None:
+    #     # 单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
+    #     stereo.capture1(video=args.left_video)
+    # elif args.right_video is not None:
+    #     # 单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
+    #     stereo.capture1(video=args.right_video)
+    elif args.left_file and args.right_file:
         # 测试一对左右图像
         stereo.test_pair_image_file(args.left_file, args.right_file)
