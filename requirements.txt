@@ -18,4 +18,3 @@ seaborn==0.11.2
 tqdm==4.55.1
 xmltodict==0.12.0
 memory_profiler
-open3d-python==0.7.0.0
