@@ -14,14 +14,14 @@ class Calibrator(object):
     """Apply camera calibrate operation for images in the given directory path."""
 
     def __init__(self):
-        self.image_size = None  # 图像尺寸（W, H）
+        self.image_size = None  # W, H）
         # Arrays to store object points and image points from all the images.
-        self.points_world_xyz = []  # 3d point in real world space,世界坐标
-        self.points_pixel_xy = []  # 2d points in image plane,像素坐标
+        self.points_world_xyz = []  # 3d point in real world space,
+        self.points_pixel_xy = []  # 2d points in image plane,
 
     @staticmethod
     def get_image_list(image_dir, prefix="", image_format="jpg"):
-        """获得棋盘格图片"""
+        
         image_dir = os.path.join(image_dir, prefix + '*.' + image_format)
         image_list = glob.glob(image_dir)
         image_list.sort()
@@ -37,8 +37,8 @@ class Calibrator(object):
         :param prefix: image prefix
         :param image_format: image format, png/jpg
         :param show: show_2dimage result
-        :return: mtx： 相机内参矩阵
-                 dist: 畸变系数矩阵
+        :return: mtx： 
+                 dist: 
         """
         image_list = self.get_image_list(image_dir, prefix, image_format)
         assert len(image_list) > 0, Exception("Error:images is empty:{}".format(image_dir))
@@ -62,12 +62,12 @@ class Calibrator(object):
                 self.image_size = gray.shape[::-1]  # (W,H)
             else:
                 assert gray.shape[::-1] == self.image_size
-            # 角点粗检测:Find the chess board corners
+            # Find the chess board corners
             # patternSize = (columns(width), rows(height))
             ret, corners = cv2.findChessboardCorners(gray, (width, height), None)
             # If found, add object points, image points (after refining them)
             if ret:
-                # 角点精检测
+                # 
                 winSize = (9, 9)
                 corners2 = cv2.cornerSubPix(gray, corners, winSize, (-1, -1), criteria)
                 self.points_world_xyz.append(point_world_xyz)
@@ -89,45 +89,34 @@ class Calibrator(object):
                                                            self.points_pixel_xy,
                                                            self.image_size,
                                                            None, None)
-        # 效果好坏评价
-        print("内参矩阵:mtx=\n", mtx)
-        print("畸变系数:dist=\n", dist)
-        # print("旋转矩阵:rvecs=\n", rvecs)
-        # print("平移矩阵:tvecs=\n", tvecs)
-        print("重投影误差:ret=\n", ret)
-        print("PS:若误差超过0.1，建议重新调整摄像头并标定")
+        # 
+        print("mtx=\n", mtx)
+        print("dist=\n", dist)
+        # print("rvecs=\n", rvecs)
+        # print("tvecs=\n", tvecs)
+        print("ret=\n", ret)
+        print("PS:if over 0.1,redo calibration")
         return ret, mtx, dist, rvecs, tvecs
 
     def rectify_test(self, filename, mtx, dist):
         """
         :param filename:
-        :param mtx:相机内参矩阵
-        :param dist: 畸变系数矩阵
+        :param mtx:
+        :param dist: 
         :return:
         """
         img = cv2.imread(filename)
         dst1 = self.rectify(img, mtx, dist)
-        plt.imshow(img, cmap='gray'), plt.title("Orig"), plt.show()  # 原图
-        plt.imshow(dst1, cmap='gray'), plt.title("rectify"), plt.show()  # 校正
-        plt.imshow(dst1 - img, cmap='gray'), plt.title("Diff"), plt.show()  # 差别
+        plt.imshow(img, cmap='gray'), plt.title("Orig"), plt.show()  
+        plt.imshow(dst1, cmap='gray'), plt.title("rectify"), plt.show()  
+        plt.imshow(dst1 - img, cmap='gray'), plt.title("Diff"), plt.show() 
 
     def rectify(self, img, mtx, dist):
-        """
-        :param img:
-        :param mtx:相机内参矩阵
-        :param dist: 畸变系数矩阵
-        :return:
-        """
-        # mtx： 相机内参矩阵 dist: 畸变系数矩阵
+
         return cv2.undistort(img, mtx, dist)
 
     def save_result(self, save_dir, prefix, mtx, dist):
-        """
-        YML file to save calibrate matrices
-        :param save_file:
-        :return:
-        """
-        # mtx： 相机内参矩阵 dist: 畸变系数矩阵
+
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         filename = [str(prefix), "cam.yml"]

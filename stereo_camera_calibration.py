@@ -13,7 +13,7 @@ class Calibrator(object):
     """Apply camera calibrate operation for images in the given directory path."""
 
     def __init__(self):
-        self.image_size = None  # 图像尺寸（H, W）
+        self.image_size = None  # （H, W）
         # Arrays to store object points and image points from all the images.
         self.points_world_xyz = []  # 3d point in real world space
         self.left_points_pixel_xy = []  # 2d points in image plane.
@@ -21,7 +21,7 @@ class Calibrator(object):
 
     @staticmethod
     def get_image_list(image_dir, prefix="", image_format="jpg"):
-        """获得棋盘格图片"""
+
         image_dir = os.path.join(image_dir, prefix + '*.' + image_format)
         image_list = glob.glob(image_dir)
         image_list.sort()
@@ -32,24 +32,24 @@ class Calibrator(object):
                         distCoeffs2, imageSize, R=None, T=None, E=None, F=None, flags=None,
                         criteria=None):
         """
-        :param objectPoints: 存储标定角点在世界坐标系中的位置
-        :param imagePoints1: 存储标定角点在第一个摄像机下的投影后的亚像素坐标
-        :param imagePoints2: 存储标定角点在第二个摄像机下的投影后的亚像素坐标
-        :param cameraMatrix1: Input/output camera intrinsic matrix for the first camera第一个相机的相机内参
-        :param distCoeffs1:  Input/output vector of distortion coefficients for the first camera 第一个相机的畸变系数
+        :param objectPoints: 
+        :param imagePoints1: 
+        :param imagePoints2: 
+        :param cameraMatrix1: Input/output camera intrinsic matrix for the first camera
+        :param distCoeffs1:  Input/output vector of distortion coefficients for the first camera 
         :param cameraMatrix2: Input/output second camera intrinsic matrix for the second camera
         :param distCoeffs2: Input/output vector of distortion coefficients for the second camera
-        :param imageSize:图像的大小(W,H)
-        :param R: rotation matrix第一和第二个摄像机之间的旋转矩阵
-        :param T: 第一和第二个摄像机之间的平移矩阵
-        :param E: essential matrix本质矩阵
-        :param F: fundamental matrix基本矩阵
+        :param imageSize:(W,H)
+        :param R: rotation matrix
+        :param T: 
+        :param E: essential matrix
+        :param F: fundamental matrix
         :param flags:
         :param criteria:
         :return:
         """
-        # 返回的结果中K1=cameraMatrix1,D1=distCoeffs1
-        # 返回的结果中K2=cameraMatrix2,D2=distCoeffs2
+        # K1=cameraMatrix1,D1=distCoeffs1
+        # K2=cameraMatrix2,D2=distCoeffs2
         ret, K1, D1, K2, D2, R, T, E, F = cv2.stereoCalibrate(objectPoints, imagePoints1, imagePoints2, cameraMatrix1,
                                                               distCoeffs1, cameraMatrix2, distCoeffs2, imageSize,
                                                               R=R, T=T, E=E, F=F, flags=flags)
@@ -64,20 +64,17 @@ class Calibrator(object):
         :param distCoeffs1:  Input/output vector of distortion coefficients for the first camera 第一个相机的畸变系数
         :param cameraMatrix2: Input/output second camera intrinsic matrix for the second camera
         :param distCoeffs2: Input/output vector of distortion coefficients for the second camera
-        :param imageSize:图像的大小(W,H)
+        :param imageSize:(W,H)
         :param R: Rotation matrix from the coordinate system of the first camera to the second camera
         :param T: Translation vector from the coordinate system of the first camera to the second camera
-        :param R1: (输出矩阵)第一个摄像机的校正变换矩阵（旋转变换）
-        :param R2: (输出矩阵)第二个摄像机的校正变换矩阵（旋转矩阵）
-        :param P1: (输出矩阵)第一个摄像机在新坐标系下的投影矩阵
-        :param P2: (输出矩阵)第二个摄像机在新坐标系下的投影矩阵
-        :param Q: 4*4的视差图到深度图的映射矩阵(disparity-to-depth mapping matrix )
+        :param R1:
+        :param R2:
+        :param P1: 
+        :param P2: (
+        :param Q: 4*4(disparity-to-depth mapping matrix )
         :param flags:
-        :param alpha: 拉伸参数。如果设置为负或忽略，将不进行拉伸。
-                如果设置为0，那么校正后图像只有有效的部分会被显示（没有黑色的部分）;
-                如果设置为1，那么就会显示整个图像
-                设置为0~1之间的某个值，其效果也居于两者之间。
-        :param newImageSize: 校正后的图像分辨率，默认为原分辨率大小
+        :param alpha: 
+        :param newImageSize: 
         :return:
         """
         R1, R2, P1, P2, Q, roi_left, roi_right = cv2.stereoRectify(cameraMatrix1, distCoeffs1,
@@ -101,12 +98,12 @@ class Calibrator(object):
                          height=6):
         """ Stereo calibration and rectification """
         self.load_image_points(left_dir, left_prefix, right_dir, right_prefix, image_format, square_size, width, height)
-        # mtx： 相机内参矩阵 dist: 畸变系数矩阵
+        # mtx：  dist: 
         mtx1, dist1, size = load_coefficients(left_file)
         print("left_camera_matrix:\n{}".format(mtx1))
         print("left_distortion:\n{}".format(dist1))
         print("--" * 30)
-        # K2： 相机内参矩阵 D2: 畸变系数矩阵
+        # K2：  D2: 
         mtx2, dist2, size = load_coefficients(right_file)
         print("right_camera_matrix:\n{}".format(mtx2))
         print("right_distortion:\n{}".format(dist2))
@@ -119,11 +116,12 @@ class Calibrator(object):
                                                                self.right_points_pixel_xy,
                                                                mtx1, dist1, mtx2, dist2,
                                                                self.image_size)
-        print("旋转矩阵:R=\n{}".format(R))
-        print("平移矩阵:T=\n{}".format(T))
+        print("R=\n{}".format(R))
+        print("T=\n{}".format(T))
         print("--" * 30)
         print("Stereo calibration rms={}".format(ret))
-        print("PS:若误差超过0.1，建议重新调整摄像头并标定")
+        print("PS:if over 0.1,redo calibration")
+
         R1, R2, P1, P2, Q, roi_left, roi_right = self.stereoRectify(K1, D1, K2, D2,
                                                                     self.image_size,
                                                                     R,
