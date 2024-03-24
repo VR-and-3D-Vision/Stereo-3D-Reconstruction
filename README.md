@@ -1,7 +1,7 @@
 # Camera-Calibration-Reconstruct
 
-本项目实现双目相机的`双目标定`，`立体校正（含消除畸变)`，`立体匹配`，`视差计算`和`深度计算/3D坐标计算`
 This project is intend to provide code for "stereo calibration", "stereo rectification", "stereo matching", "disparity calculation", "3d depth estimation"
+
 
 ## 1.Directory
 
