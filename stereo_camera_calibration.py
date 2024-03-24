@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 import glob
 import argparse
-from core.utils.file_storage import load_coefficients, save_stereo_coefficients
+from lib.utils import load_coefficients, save_stereo_coefficients
 
 
 class Calibrator(object):

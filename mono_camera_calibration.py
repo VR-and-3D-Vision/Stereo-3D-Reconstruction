@@ -11,7 +11,7 @@ import argparse
 import glob
 import matplotlib.pylab as plt
 from tqdm import tqdm
-from core.utils import file_storage
+from lib import utils
 
 
 class Calibrator(object):
@@ -137,7 +137,7 @@ class Calibrator(object):
         filename = [str(prefix), "cam.yml"]
         filename = "_".join(filename)
         save_file = os.path.join(save_dir, filename)
-        file_storage.save_coefficients(mtx, dist, save_file, self.image_size)
+        utils.save_coefficients(mtx, dist, save_file, self.image_size)
         print("save config in {}".format(save_file))
 
 
