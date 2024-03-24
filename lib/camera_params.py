@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-# --------------------------------------------------------
-# @Project: python-learning-notes
-# @Author : pan-author
-# @E-mail : 390737991@qq.com
-# @Date   : 2020-04-13 11:47:17
-# --------------------------------------------------------
-"""
+
 import numpy as np
 import cv2
 

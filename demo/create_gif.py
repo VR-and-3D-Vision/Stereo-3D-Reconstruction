@@ -1,9 +1,5 @@
 # -*-coding: utf-8 -*-
-"""
-    @Author : pan-author
-    @E-mail : 390737991@qq.com
-    @Date   : 2021-11-12 09:07:13
-"""
+
 import os
 import cv2
 from core.utils import file_utils, image_utils

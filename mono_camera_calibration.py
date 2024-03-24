@@ -1,9 +1,5 @@
 # -*-coding: utf-8 -*-
-"""
-    @Author : pan-author
-    @E-mail : 390737991@qq.com
-    @Date   : 2021-11-10 10:05:40
-"""
+
 import os
 import numpy as np
 import cv2
