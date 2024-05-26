@@ -68,14 +68,8 @@ python demo.py  \
 |      left                                         |      right                                             |
 |:-------------------------------------------------:|:------------------------------------------------------:|
 | ![Image text](docs/left.png)                      | ![Image text](docs/right.png)                          |
-|      **disparity(without wsl filter)**                           |**disparity(without wsl filter)**                                                  |
+|      **depth(with wsl filter)**                           |**disparity(with wsl filter)**                                                  |
 | ![Image text](docs/disparity.png)                 | ![Image text](docs/depth.png)                      |
-|      **disparity(with wsl filter)**                             |**disparity(with wsl filter)**                                                  |
-| ![Image text](docs/disparity_filter.png)          | ![Image text](docs/depth_filter.png)                      |
-
-- Video_result
-
-![Image text](docs/demo.gif) 
 
   
 ## 7.Reference
